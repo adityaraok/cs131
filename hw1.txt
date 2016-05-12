@@ -1,0 +1,59 @@
+subset a b
+--------------------------------------------------
+The logic was to take the first element of a and check if it was a member of b. Then pass the tail of a to this function recursively.
+
+equal_sets a b
+------------------------------------------
+a and b are subsets of each other. 
+
+set_union a b
+----------------------------------------------
+ Each element of a is added/not added to b based on whether it is a member/not a member of b.
+
+set_intersection a b
+----------------------------------------------------------------
+similar  to set union but only those in a are added to b.
+
+set_diff
+-----------------------------------------------------------------------
+Each element of a is considered and based on whether it is a member of b or not, a new list a containing members of a but non-members of b is returned.
+
+computed_fixed point f x
+---------------------------------------------------------------------------
+finds a fixed point for a function f such that f x = x.
+
+computed_periodic_point f p x
+-----------------------------------------------------------------------------------
+uses a helper funtion, apply_p_times eq f p x,  to apply the rule f to x p times
+
+filter_blind_alley g
+-----------------------------------------------------------------------
+Initially I tried approaching it by:
+---> separating the terminal rules from the non terminal rules and
+---> then using the terminal rules list to further remove the non terminal rules which eventually end in a terminal rule
+---> The resultant non terminal rule list now contains non terminating rules.
+---> use set_diff to remove the non-terminating rules from the original rule set 
+ I  employed a variation of the above logic:
+--> a function to ensure that the rule doesnot terminate on the ruleset
+--> a funtion to loop through individual rules of the ruleset and feed them on by one to the above function.
+
+helper functions used:
+bool_terminates rule ruleset unchangedruleset
+----------
+to determine whether a rule terminates on a particular ruleset
+if ruleset=[ [Expr, [N Lvalue; T 1] ]; [Expr, [ T 1]] ; [Lvalue, [N Lvalue]] ] 
+rule=[Expr, [N Lvalue; T 1] ] then 
+bool_terminates is recursed with 
+rule= (Lvalue, [N Lvalue]]) 
+ruleset=[[Expr, [ T 1]] ; [Lvalue, [N Lvalue]] ] and 
+originalrule=[Expr, [N Lvalue; T 1] ]
+this continues untill ruleset is an empty list
+
+loopruleset rule unchangedrule
+------------------
+to separate out each rule from a ruleset and send them to the bool_terminates function. The ruleset is reduced with each recursion.
+
+
+
+
+

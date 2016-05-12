@@ -1,0 +1,42 @@
+ASSESSMENT:
+The parsing is left associative. If I have to make it right associative, the code would require a few (or a lot) of extra tweaks. Also the derivation process fails if there are two non terminals which point to each other. For example,
+The grammar parsing of the following grammar,
+(Expr, [Expr, [N Lvalue];[T "0"]; Expr,[T "7"] ; Lvalue, [N Expr]; [T "1"]] ) will not halt. 
+
+MY APPROACH:
+To convert grammar 1 to grammar 2, I used a function to get me a list of unique nonterminals (list_of_nonterminals), I passed this list to
+ a function which gave me all the rhs associated with a particular non-terminal (extract_rhs). Then I generate grammar by mapping each
+ nonterminal in the list returned by the function, list_of_nonterminals, to the function, extract_rhs.
+
+Functions used:
+set_diff(type:'a list -> 'a list -> 'a list = <fun>)
+list_of_nonterminals(type:'a list -> 'a list -> 'a list = <fun>)
+extract_rhs(type:'a -> ('a * 'b list) list -> 'b list list -> 'b list list =<fun>)
+convert_grammar(type:'a * ('b * 'c list) list -> 'a * ('b -> 'c list list) =<fun>)
+To implement the matcher I used three mutually recursive functions, 
+matcher 
+(type: ('a, 'b) symbol list list ->'a ->('a -> ('a, 'b) symbol list list) ->(('a * ('a, 'b) symbol list) list -> 'b list -> ('c * 'd) option) ->('a * ('a, 'b) symbol list) list -> 'b list -> ('c * 'd) option= <fun>)
+
+get_derivation 
+(type: ('a, 'b) symbol list ->('a -> ('a, 'b) symbol list list) ->(('a * ('a, 'b) symbol list) list -> 'b list -> ('c * 'd) option) ->('a * ('a, 'b) symbol list) list -> 'b list -> ('c * 'd) option= <fun>)
+
+and
+
+separate_rules
+(type: ('a -> ('a, 'b) symbol list list) ->'a ->('a, 'b) symbol list list ->(('a * ('a, 'b) symbol list) list -> 'b list -> ('c * 'd) option) ->
+('a * ('a, 'b) symbol list) list -> 'b list -> ('c * 'd) option
+= <fun>)
+
+The matcher takes each rule and sees if the fragment can be derived (through separate_rules and get_derivation). If not, the next rule from 
+ the rhs is taken. If rhs is empty and no match to Some(x,y) is found, the matcher returns None. The separate_rules function gives out each rule to the get_derivation function and checks if a derivation is possible.
+The get_derivation function takes a rule and checks for the terminal or the nonterminal symbol. If a terminal symbol is matched in the
+ rule, it further checks if the values match. If they do, it recurses considering the rest of the rule. Else, None is returned (to indicate
+ wrong dead end or terminal to the matcher). When the get_derivation function encounters an N (nonterminal) in the rule, it sends the
+ nonterminal back to the matcher as a start symbol. This matcher->separate_rules->get_derivation->matcher cycle continues until the rhs is 
+ exhausted or until the frag is complete whichever occurs earlier.
+
+
+
+
+
+
